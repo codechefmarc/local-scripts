@@ -1,0 +1,12 @@
+#!/bin/bash
+
+NC='\033[0m'
+BLUE="\e[0;94m"
+
+read -p "This will enable twig debugging. What is the doc root? [web]: " docroot
+docroot=${docroot:-web}
+
+cp $docroot/sites/example.settings.local.php $docroot/sites/default/settings.local.php
+cp ~/4K/local-scripts/assets/development.services.yml $docroot/sites
+
+printf "${BLUE}Done! Go catch those 🐞!\n\n${NC}"
