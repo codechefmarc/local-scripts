@@ -1,0 +1,46 @@
+#!/bin/bash
+
+NC='\033[0m'
+BLUE="\e[0;94m"
+
+composerPackages=(drush/drush drupal/admin_toolbar drupal/devel kint-php/kint)
+
+read -p "This will spin up a local Drupal 10 site. What is the name of the project [Book of Atrus]: " projectName
+projectName=${projectName:-Book of Atrus}
+
+directory=$(echo $projectName | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+printf "${BLUE}========== Downloading Drupal ==========\n\n${NC}"
+
+composer create-project drupal/recommended-project $directory
+cd $directory
+
+printf "${BLUE}========== Lando init ==========\n\n${NC}"
+
+cp ~/4K/local-scripts/assets/lando.template .lando.yml
+sed -i '' "s/%name%/$directory/g" .lando.yml
+
+printf "${BLUE}========== Lando rebuild ==========\n\n${NC}"
+
+lando rebuild -y
+
+printf "${BLUE}========== Add Composer packages ==========\n\n${NC}"
+
+lando composer install
+
+for i in "${composerPackages[@]}"
+do
+  lando composer require $i
+done
+
+printf "${BLUE}========== Install Drupal ==========\n\n${NC}"
+
+lando drush si standard --db-url=mysql://drupal10:drupal10@database:3306/drupal10 -y
+
+printf "${BLUE}========== Enable modules ==========\n\n${NC}"
+
+lando drush en admin_toolbar_tools -y
+
+lando drush cr
+
+lando drush uli

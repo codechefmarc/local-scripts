@@ -1,0 +1,9 @@
+name: %name%
+recipe: drupal10
+config:
+  webroot: web
+tooling:
+  drush:
+    service: appserver
+    env:
+      DRUSH_OPTIONS_URI: "https://%name%.lndo.site"
