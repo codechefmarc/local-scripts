@@ -1,0 +1,4 @@
+#!/bin/bash
+
+OUTPUT=$(terminus drush yalesites-platform.$1 -- uli)
+open $OUTPUT
